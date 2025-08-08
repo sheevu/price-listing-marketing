@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocalGrow - AI Business Portal Lucknow</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a092d;
+            color: #e0e0e0;
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .hero-bg {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1e3a8a 0%, #0a092d 50%, #4c1d95 100%);
+        }
+        #hero-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+        .category-card:hover .category-icon {
+            transform: scale(1.2);
+            color: #a78bfa;
+        }
+        .pricing-card {
+            transition: all 0.3s ease;
+        }
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(139, 92, 246, 0.2), 0 10px 10px -5px rgba(139, 92, 246, 0.1);
+        }
+        .special-offer-card {
+            background: linear-gradient(135deg, #f59e0b, #ec4899);
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #8b5cf6, #ec4899);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ec4899;
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid #8b5cf6;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background-color: #8b5cf6;
+            color: white;
+        }
+        /* Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-backdrop.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background: #1e1b4b; /* Darker blue-purple */
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 90%;
+            max-width: 600px;
+            transform: translateY(-50px);
+            transition: transform 0.3s ease;
+        }
+        .modal-backdrop.active .modal-content {
+            transform: translateY(0);
+        }
+
+        /* Loading Spinner */
+        .loader {
+            border: 4px solid #f3f3f340;
+            border-top: 4px solid #8b5cf6;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 glass-effect" data-aos="fade-down">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-2xl font-bold text-white">Local<span class="text-violet-400">Grow</span> AI</a>
+            <div class="hidden lg:flex items-center space-x-8">
+                <a href="#home" class="text-gray-300 hover:text-white transition">Home</a>
+                <a href="#categories" class="text-gray-300 hover:text-white transition">Categories</a>
+                <a href="#pricing" class="text-gray-300 hover:text-white transition">Pricing</a>
+                <a href="#about" class="text-gray-300 hover:text-white transition">About</a>
+                <a href="#blog" class="text-gray-300 hover:text-white transition">Blog</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                 <button class="hidden md:block btn-secondary text-white font-semibold py-2 px-4 rounded-lg">
+                    Login
+                </button>
+                <button id="listBusinessBtn" class="btn-primary text-white font-bold py-2 px-4 rounded-lg">
+                    List Your Business
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="hero-bg pt-32 pb-20 md:pt-48 md:pb-32">
+            <canvas id="hero-canvas"></canvas>
+            <div class="hero-content container mx-auto px-6 text-center">
+                <h1 id="hero-headline" class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-4" data-aos="fade-up">
+                    Amplify Your Business in <span class="text-violet-400">Lucknow</span> with AI
+                </h1>
+                <p id="hero-subheadline" class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8" data-aos="fade-up" data-aos-delay="200">
+                    The smartest platform to connect with local customers, get discovered, and grow your brand exponentially.
+                </p>
+                <div class="max-w-xl mx-auto" data-aos="fade-up" data-aos-delay="400">
+                    <div class="relative">
+                        <input type="text" id="search-input" placeholder="Search for restaurants, shops, services..." class="w-full py-4 px-6 rounded-full bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400 border border-white/20">
+                        <button class="absolute right-2 top-1/2 -translate-y-1/2 btn-primary text-white font-semibold py-2.5 px-6 rounded-full">
+                            Search
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Top Business in Lucknow -->
+        <section id="top-business" class="py-20 bg-slate-900/50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">Top Rated Businesses in Lucknow</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Business Card 1 -->
+                    <div class="glass-effect rounded-xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300" data-aos="fade-up">
+                        <img src="https://placehold.co/400x250/1e3a8a/ffffff?text=Restaurant" class="w-full h-48 object-cover" alt="Tunday Kababi">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Tunday Kababi</h3>
+                            <p class="text-violet-400 font-medium mb-3">Restaurant</p>
+                            <div class="flex items-center">
+                                <span class="text-yellow-400">★★★★☆</span>
+                                <span class="text-gray-400 ml-2">(1.2k Reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Business Card 2 -->
+                    <div class="glass-effect rounded-xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300" data-aos="fade-up" data-aos-delay="100">
+                        <img src="https://placehold.co/400x250/4c1d95/ffffff?text=Clothing" class="w-full h-48 object-cover" alt="Ada Chikan">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Ada Chikan</h3>
+                            <p class="text-violet-400 font-medium mb-3">Clothing Store</p>
+                            <div class="flex items-center">
+                                <span class="text-yellow-400">★★★★★</span>
+                                <span class="text-gray-400 ml-2">(980 Reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Business Card 3 -->
+                    <div class="glass-effect rounded-xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300" data-aos="fade-up" data-aos-delay="200">
+                        <img src="https://placehold.co/400x250/be123c/ffffff?text=Cafe" class="w-full h-48 object-cover" alt="The Cherry Tree Cafe">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">The Cherry Tree Cafe</h3>
+                            <p class="text-violet-400 font-medium mb-3">Cafe</p>
+                            <div class="flex items-center">
+                                <span class="text-yellow-400">★★★★★</span>
+                                <span class="text-gray-400 ml-2">(2.1k Reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Business Card 4 -->
+                    <div class="glass-effect rounded-xl overflow-hidden transform hover:-translate-y-2 transition-transform duration-300" data-aos="fade-up" data-aos-delay="300">
+                        <img src="https://placehold.co/400x250/047857/ffffff?text=Bookstore" class="w-full h-48 object-cover" alt="Universal Booksellers">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Universal Booksellers</h3>
+                            <p class="text-violet-400 font-medium mb-3">Bookstore</p>
+                            <div class="flex items-center">
+                                <span class="text-yellow-400">★★★★☆</span>
+                                <span class="text-gray-400 ml-2">(850 Reviews)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Business Categories -->
+        <section id="categories" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">Explore Business Categories</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 text-center">
+                    <!-- Category Card -->
+                    <a href="#category-list" class="category-card p-6 glass-effect rounded-xl cursor-pointer" data-aos="zoom-in">
+                        <div class="category-icon text-5xl mb-4 transition-transform duration-300">🍽️</div>
+                        <h3 class="text-lg font-semibold text-white">Restaurants</h3>
+                    </a>
+                     <a href="#category-list" class="category-card p-6 glass-effect rounded-xl cursor-pointer" data-aos="zoom-in" data-aos-delay="50">
+                        <div class="category-icon text-5xl mb-4 transition-transform duration-300">🛍️</div>
+                        <h3 class="text-lg font-semibold text-white">Shopping</h3>
+                    </a>
+                     <a href="#category-list" class="category-card p-6 glass-effect rounded-xl cursor-pointer" data-aos="zoom-in" data-aos-delay="100">
+                        <div class="category-icon text-5xl mb-4 transition-transform duration-300">🏨</div>
+                        <h3 class="text-lg font-semibold text-white">Hotels</h3>
+                    </a>
+                     <a href="#category-list" class="category-card p-6 glass-effect rounded-xl cursor-pointer" data-aos="zoom-in" data-aos-delay="150">
+                        <div class="category-icon text-5xl mb-4 transition-transform duration-300">🩺</div>
+                        <h3 class="text-lg font-semibold text-white">Doctors</h3>
+                    </a>
+                     <a href="#category-list" class="category-card p-6 glass-effect rounded-xl cursor-pointer" data-aos="zoom-in" data-aos-delay="200">
+                        <div class="category-icon text-5xl mb-4 transition-transform duration-300">🔧</div>
+                        <h3 class="text-lg font-semibold text-white">Real Estate</h3>
+                    </a>
+                     <a href="#category-list" class="category-card p-6 glass-effect rounded-xl cursor-pointer" data-aos="zoom-in" data-aos-delay="250">
+                        <div class="category-icon text-5xl mb-4 transition-transform duration-300">🎓</div>
+                        <h3 class="text-lg font-semibold text-white">Education</h3>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category wise list in Lucknow -->
+        <section id="category-list" class="py-20 bg-slate-900/50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">Restaurants in Lucknow</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Business List Item 1 -->
+                    <div class="glass-effect rounded-xl overflow-hidden" data-aos="fade-up">
+                        <img src="https://placehold.co/400x250/1e3a8a/ffffff?text=Kebab+Place" class="w-full h-48 object-cover" alt="Dastarkhwan">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Dastarkhwan</h3>
+                            <p class="text-gray-400 text-sm mb-3">Awadhi, Mughlai • Lalbagh</p>
+                            <div class="flex items-center mb-4">
+                                <span class="text-yellow-400">★★★★★</span>
+                                <span class="text-gray-400 ml-2">(3.5k Reviews)</span>
+                            </div>
+                            <p class="text-gray-300 text-sm">A legendary spot for authentic Lucknowi cuisine, famous for its Galawati Kebab and Mutton Biryani.</p>
+                        </div>
+                    </div>
+                    <!-- Business List Item 2 -->
+                    <div class="glass-effect rounded-xl overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                        <img src="https://placehold.co/400x250/991b1b/ffffff?text=Fine+Dining" class="w-full h-48 object-cover" alt="Oudhyana">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Oudhyana - Vivanta</h3>
+                            <p class="text-gray-400 text-sm mb-3">Fine Dining, Awadhi • Gomti Nagar</p>
+                            <div class="flex items-center mb-4">
+                                <span class="text-yellow-400">★★★★★</span>
+                                <span class="text-gray-400 ml-2">(700 Reviews)</span>
+                            </div>
+                            <p class="text-gray-300 text-sm">Experience royal Awadhi dining with exquisite kebabs and curries in a luxurious setting.</p>
+                        </div>
+                    </div>
+                    <!-- Business List Item 3 -->
+                    <div class="glass-effect rounded-xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                        <img src="https://placehold.co/400x250/166534/ffffff?text=Vegetarian" class="w-full h-48 object-cover" alt="Royal Cafe">
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-white mb-2">Royal Cafe</h3>
+                            <p class="text-gray-400 text-sm mb-3">North Indian, Chaat • Hazratganj</p>
+                            <div class="flex items-center mb-4">
+                                <span class="text-yellow-400">★★★★☆</span>
+                                <span class="text-gray-400 ml-2">(4.2k Reviews)</span>
+                            </div>
+                            <p class="text-gray-300 text-sm">An iconic eatery famous for its Basket Chaat and diverse vegetarian menu.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center mt-12">
+                    <button class="btn-secondary font-bold py-3 px-8 rounded-lg">View All Restaurants</button>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Offer & Plan Pricing -->
+        <section id="pricing" class="py-20">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4" data-aos="fade-up">Flexible Plans for Every Business</h2>
+                <p class="text-center text-gray-400 mb-12 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">Choose a plan that fits your needs and unlock powerful AI tools to boost your visibility and sales.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Special Offer Card -->
+                    <div class="pricing-card special-offer-card text-white rounded-xl p-8 flex flex-col ring-4 ring-amber-400" data-aos="zoom-in">
+                        <div class="relative">
+                           <span class="absolute -top-12 right-0 bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase">Limited Time</span>
+                       </div>
+                       <h3 class="text-2xl font-bold">Startup Offer</h3>
+                       <p class="text-amber-100 mt-2 mb-6">Get online instantly!</p>
+                       <div class="text-4xl font-extrabold mb-6">₹89</div>
+                       <ul class="space-y-4 text-amber-50 mb-8 flex-grow">
+                           <li class="flex items-center"><span class="text-white mr-3">✔</span>Online Website</li>
+                           <li class="flex items-center"><span class="text-white mr-3">✔</span>Free Udyam Certificate</li>
+                           <li class="flex items-center"><span class="text-white mr-3">✔</span>Basic Listing</li>
+                       </ul>
+                       <button class="w-full bg-white text-amber-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition">Claim Offer</button>
+                   </div>
+
+                    <!-- Pricing Card 1: Basic -->
+                    <div class="pricing-card glass-effect rounded-xl p-8 flex flex-col" data-aos="fade-up">
+                        <h3 class="text-2xl font-bold text-white">Basic</h3>
+                        <p class="text-gray-400 mt-2 mb-6">For new businesses getting started.</p>
+                        <div class="text-4xl font-extrabold text-white mb-6">Free</div>
+                        <ul class="space-y-4 text-gray-300 mb-8 flex-grow">
+                            <li class="flex items-center"><span class="text-green-400 mr-3">✔</span>Basic Business Listing</li>
+                            <li class="flex items-center"><span class="text-green-400 mr-3">✔</span>Contact Information</li>
+                            <li class="flex items-center"><span class="text-green-400 mr-3">✔</span>1 Photo Upload</li>
+                        </ul>
+                        <button class="w-full btn-secondary font-bold py-3 px-6 rounded-lg">Get Started</button>
+                    </div>
+
+                    <!-- Pricing Card 2: Premium (Highlighted) -->
+                    <div class="pricing-card bg-violet-600 rounded-xl p-8 flex flex-col ring-4 ring-violet-400" data-aos="fade-up" data-aos-delay="100">
+                         <div class="relative">
+                            <span class="absolute -top-12 right-0 bg-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full">MOST POPULAR</span>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white">Premium</h3>
+                        <p class="text-violet-200 mt-2 mb-6">For growing businesses ready to scale.</p>
+                        <div class="text-4xl font-extrabold text-white mb-6">₹499 <span class="text-xl font-normal text-violet-200">/mo</span></div>
+                        <ul class="space-y-4 text-violet-100 mb-8 flex-grow">
+                            <li class="flex items-center"><span class="text-white mr-3">✔</span>Enhanced Listing</li>
+                            <li class="flex items-center"><span class="text-white mr-3">✔</span>Up to 10 Photos</li>
+                            <li class="flex items-center"><span class="text-white mr-3">✔</span>Customer Reviews</li>
+                            <li class="flex items-center"><span class="text-white mr-3">✔</span>Basic Analytics</li>
+                        </ul>
+                        <button class="w-full bg-white text-violet-600 font-bold py-3 px-6 rounded-lg hover:bg-gray-200 transition">Choose Plan</button>
+                    </div>
+                    
+                    <!-- Pricing Card 3: AI Powered -->
+                    <div class="pricing-card glass-effect rounded-xl p-8 flex flex-col" data-aos="fade-up" data-aos-delay="200">
+                        <h3 class="text-2xl font-bold text-white">AI Powered</h3>
+                        <p class="text-gray-400 mt-2 mb-6">For businesses that want to dominate the market.</p>
+                        <div class="text-4xl font-extrabold text-white mb-6">₹999 <span class="text-xl font-normal text-gray-400">/mo</span></div>
+                        <ul class="space-y-4 text-gray-300 mb-8 flex-grow">
+                            <li class="flex items-center"><span class="text-green-400 mr-3">✔</span>All Premium Features</li>
+                            <li class="flex items-center"><span class="text-green-400 mr-3">✔</span>✨ AI-Generated Descriptions</li>
+                            <li class="flex items-center"><span class="text-green-400 mr-3">✔</span>📱 AI WhatsApp Messages</li>
+                            <li class="flex items-center"><span class="text-green-400 mr-3">✔</span>📊 AI Competitor Analysis</li>
+                        </ul>
+                        <button class="w-full btn-primary font-bold py-3 px-6 rounded-lg">Choose Plan</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Us, Services, Projects Section -->
+        <section id="about" class="py-20 bg-slate-900/50">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4" data-aos="fade-up">Empowering Lucknow's Local Economy</h2>
+                    <p class="text-gray-400 mb-12 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                        We are a team of passionate innovators based in Lucknow, dedicated to empowering local businesses through cutting-edge AI technology. Our mission is to bridge the gap between businesses and their potential customers, fostering a thriving local economy for everyone.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <!-- Services Card -->
+                    <div class="glass-effect p-8 rounded-xl" data-aos="fade-right">
+                        <h3 class="text-xl font-bold mb-4 text-violet-400">Our Services</h3>
+                        <p class="text-gray-300">We provide a suite of tools including AI-driven listings, customer analytics, competitor insights, and targeted marketing solutions to help your business shine.</p>
+                    </div>
+                    <!-- Projects Card -->
+                    <div class="glass-effect p-8 rounded-xl" data-aos="fade-up">
+                        <h3 class="text-xl font-bold mb-4 text-violet-400">Our Projects</h3>
+                        <p class="text-gray-300">We've helped hundreds of businesses, from small cafes to large retail stores, increase their visibility, attract more customers, and grow their revenue.</p>
+                    </div>
+                    <!-- About Us Card -->
+                    <div class="glass-effect p-8 rounded-xl" data-aos="fade-left">
+                        <h3 class="text-xl font-bold mb-4 text-violet-400">Our Mission</h3>
+                        <p class="text-gray-300">Our goal is simple: to make technology accessible and affordable for every local business, ensuring they can compete and succeed in the digital age.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI Tools Section -->
+        <section id="ai-tools" class="py-20">
+            <div class="container mx-auto px-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-bold mb-4" data-aos="fade-up">Try Our Free AI Tools</h2>
+                    <p class="text-gray-400 mb-12 max-w-2xl mx-auto" data-aos="fade-up" data-aos-delay="100">
+                        Don't just list your business, make it stand out. Our Gemini-powered tools help you create the perfect marketing copy in seconds.
+                    </p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- AI Description Generator Card -->
+                    <div class="glass-effect rounded-xl p-8 flex flex-col" data-aos="fade-right">
+                        <h3 class="text-2xl font-bold text-white mb-4">✨ AI Business Description Generator</h3>
+                        <p class="text-gray-300 mb-6 flex-grow">Struggling with what to write for your profile? Just enter a few keywords, and our AI will craft a compelling, professional description designed to attract customers.</p>
+                        <button id="tryDescBtn" class="btn-secondary font-bold py-3 px-8 rounded-lg mt-4">
+                            Try It Now
+                        </button>
+                    </div>
+                    <!-- AI WhatsApp Message Generator Card -->
+                    <div class="glass-effect rounded-xl p-8 flex flex-col" data-aos="fade-left">
+                        <h3 class="text-2xl font-bold text-white mb-4">📱 AI WhatsApp Message Generator</h3>
+                        <p class="text-gray-300 mb-6 flex-grow">Planning a promotion? Instantly generate catchy WhatsApp messages to send to your customers. Perfect for sales, events, and special offers.</p>
+                        <button id="tryWhatsappBtn" class="btn-secondary font-bold py-3 px-8 rounded-lg mt-4">
+                            Try It Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+         <!-- Blog Section -->
+        <section id="blog" class="py-20 bg-slate-900/50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12" data-aos="fade-up">From Our Blog: Tips for Growth</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Blog Post 1 -->
+                    <div class="glass-effect rounded-xl overflow-hidden" data-aos="fade-up">
+                        <img src="https://placehold.co/400x220/8b5cf6/ffffff?text=Marketing" class="w-full h-40 object-cover" alt="Blog Image">
+                        <div class="p-6">
+                            <p class="text-sm text-violet-400 mb-2">Marketing</p>
+                            <h3 class="text-lg font-bold text-white mb-4">5 Ways to Use AI for Local SEO in Lucknow</h3>
+                            <a href="#" class="font-semibold text-white hover:text-violet-300 transition">Read More &rarr;</a>
+                        </div>
+                    </div>
+                    <!-- Blog Post 2 -->
+                    <div class="glass-effect rounded-xl overflow-hidden" data-aos="fade-up" data-aos-delay="100">
+                        <img src="https://placehold.co/400x220/ec4899/ffffff?text=Growth" class="w-full h-40 object-cover" alt="Blog Image">
+                        <div class="p-6">
+                            <p class="text-sm text-violet-400 mb-2">Business Growth</p>
+                            <h3 class="text-lg font-bold text-white mb-4">Customer Story: How a Local Cafe Doubled its Footfall</h3>
+                            <a href="#" class="font-semibold text-white hover:text-violet-300 transition">Read More &rarr;</a>
+                        </div>
+                    </div>
+                    <!-- Blog Post 3 -->
+                    <div class="glass-effect rounded-xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+                        <img src="https://placehold.co/400x220/3b82f6/ffffff?text=Tech" class="w-full h-40 object-cover" alt="Blog Image">
+                        <div class="p-6">
+                            <p class="text-sm text-violet-400 mb-2">Technology</p>
+                            <h3 class="text-lg font-bold text-white mb-4">Understanding Our AI: How We Match Customers to You</h3>
+                            <a href="#" class="font-semibold text-white hover:text-violet-300 transition">Read More &rarr;</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400">
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
+                <div class="col-span-2 lg:col-span-1">
+                    <h3 class="text-xl font-bold text-white mb-4">LocalGrow AI</h3>
+                    <p class="text-sm">Empowering Lucknow's local businesses with the power of artificial intelligence.</p>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Quick Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#about" class="hover:text-white">About Us</a></li>
+                        <li><a href="#blog" class="hover:text-white">Blog</a></li>
+                        <li><a href="#contact" class="hover:text-white">Contact</a></li>
+                        <li><a href="#faq" class="hover:text-white">FAQ</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 class="font-semibold text-white mb-4">For Business</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#pricing" class="hover:text-white">Claim Listing</a></li>
+                        <li><a href="#pricing" class="hover:text-white">Advertise</a></li>
+                        <li><a href="#ai-tools" class="hover:text-white">AI Tools</a></li>
+                        <li><a href="#support" class="hover:text-white">Support</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-white mb-4">Legal</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white">Terms of Service</a></li>
+                    </ul>
+                </div>
+                 <div>
+                    <h4 class="font-semibold text-white mb-4">Follow Us</h4>
+                    <div class="flex space-x-4">
+                        <a href="#" class="hover:text-white">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-white">
+                           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.71v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" /></svg>
+                        </a>
+                        <a href="#" class="hover:text-white">
+                           <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.024.06 1.378.06 3.808s-.012 2.784-.06 3.808c-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.024.048-1.378.06-3.808.06s-2.784-.013-3.808-.06c-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.048-1.024-.06-1.378-.06-3.808s.012-2.784.06-3.808c.049 1.064.218 1.791.465 2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 016.345 2.525c.636-.247 1.363.416 2.427-.465C9.793 2.013 10.147 2 12.315 2zm-1.161 1.545c-1.002.046-1.612.2-2.13.42a3.397 3.397 0 00-1.21 1.21c-.22.518-.374 1.128-.42 2.13-.046 1.002-.058 1.32-.058 3.695s.012 2.693.058 3.695c.046 1.002.2 1.612.42 2.13a3.397 3.397 0 001.21 1.21c.518.22 1.128.374 2.13.42 1.002.046 1.32.058 3.695.058s2.693-.012 3.695-.058c1.002-.046 1.612-.2 2.13-.42a3.397 3.397 0 001.21-1.21c.22-.518.374-1.128.42-2.13.046-1.002.058-1.32.058-3.695s-.012-2.693-.058-3.695c-.046-1.002-.2-1.612-.42-2.13a3.397 3.397 0 00-1.21-1.21c-.518-.22-1.128-.374-2.13-.42-1.002-.046-1.32-.058-3.695-.058s-2.693.012-3.695.058zm5.838 5.88a2.94 2.94 0 11-5.88 0 2.94 2.94 0 015.88 0zm-1.548 0a1.392 1.392 0 10-2.784 0 1.392 1.392 0 002.784 0zM18 7.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" clip-rule="evenodd" /></svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 pt-8 border-t border-gray-800 text-center text-sm">
+                <p>&copy; 2025 LocalGrow AI. Made with ❤️ in Lucknow, India. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- AI Modals -->
+    <div id="aiDescModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">✨ AI Description Generator</h2>
+                <button id="closeDescModalBtn" class="text-2xl leading-none font-bold text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div>
+                <label for="descKeywords" class="block text-sm font-medium text-gray-300 mb-2">Enter keywords about your business</label>
+                <input type="text" id="descKeywords" class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400" placeholder="e.g., Ada Chikan, authentic chikankari, kurtas, sarees">
+                
+                <button id="generateDescBtn" class="w-full btn-primary font-bold py-3 px-6 rounded-lg mt-6 flex items-center justify-center">
+                    <span id="generateDescBtnText">Generate Description</span>
+                    <div id="descLoader" class="loader hidden ml-3"></div>
+                </button>
+
+                <div id="descResultContainer" class="mt-6 hidden">
+                    <label for="aiDescResult" class="block text-sm font-medium text-gray-300 mb-2">Generated Description:</label>
+                    <textarea id="aiDescResult" rows="6" class="w-full p-3 rounded-lg bg-white/10 text-white focus:outline-none focus:ring-2 focus:ring-violet-400"></textarea>
+                    <p id="descErrorMessage" class="text-red-400 text-sm mt-2"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="aiWhatsappModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">📱 AI WhatsApp Message Generator</h2>
+                <button id="closeWhatsappModalBtn" class="text-2xl leading-none font-bold text-gray-400 hover:text-white">&times;</button>
+            </div>
+            <div>
+                <label for="whatsappOffer" class="block text-sm font-medium text-gray-300 mb-2">What is your offer or event?</label>
+                <input type="text" id="whatsappOffer" class="w-full p-3 rounded-lg bg-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-violet-400" placeholder="e.g., Flat 20% off, New menu launch, Weekend special">
+                
+                <button id="generateWhatsappBtn" class="w-full btn-primary font-bold py-3 px-6 rounded-lg mt-6 flex items-center justify-center">
+                    <span id="generateWhatsappBtnText">Generate Messages</span>
+                    <div id="whatsappLoader" class="loader hidden ml-3"></div>
+                </button>
+
+                <div id="whatsappResultContainer" class="mt-6 hidden">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Generated Messages (Tap to copy):</label>
+                    <div id="aiWhatsappResult" class="space-y-3"></div>
+                    <p id="whatsappErrorMessage" class="text-red-400 text-sm mt-2"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize AOS library for scroll animations
+            AOS.init({
+                duration: 800,
+                once: true,
+            });
+
+            // --- Interactive Hero Canvas Animation ---
+            const canvas = document.getElementById('hero-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                canvas.width = window.innerWidth;
+                canvas.height = document.getElementById('home').offsetHeight;
+
+                let particlesArray;
+
+                const mouse = {
+                    x: null,
+                    y: null,
+                    radius: (canvas.height / 100) * (canvas.width / 100)
+                }
+
+                window.addEventListener('mousemove', function(event) {
+                    mouse.x = event.x;
+                    mouse.y = event.y;
+                });
+
+                class Particle {
+                    constructor(x, y, directionX, directionY, size, color) {
+                        this.x = x;
+                        this.y = y;
+                        this.directionX = directionX;
+                        this.directionY = directionY;
+                        this.size = size;
+                        this.color = color;
+                    }
+                    draw() {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+                        ctx.fillStyle = 'rgba(139, 92, 246, 0.3)';
+                        ctx.fill();
+                    }
+                    update() {
+                        if (this.x > canvas.width || this.x < 0) {
+                            this.directionX = -this.directionX;
+                        }
+                        if (this.y > canvas.height || this.y < 0) {
+                            this.directionY = -this.directionY;
+                        }
+                        let dx = mouse.x - this.x;
+                        let dy = mouse.y - this.y;
+                        let distance = Math.sqrt(dx*dx + dy*dy);
+                        if (distance < mouse.radius + this.size){
+                            if(mouse.x < this.x && this.x < canvas.width - this.size * 10){
+                                this.x += 5;
+                            }
+                            if(mouse.x > this.x && this.x > this.size * 10){
+                                this.x -= 5;
+                            }
+                            if(mouse.y < this.y && this.y < canvas.height - this.size * 10){
+                                this.y += 5;
+                            }
+                            if(mouse.y > this.y && this.y > this.size * 10){
+                                this.y -= 5;
+                            }
+                        }
+                        this.x += this.directionX;
+                        this.y += this.directionY;
+                        this.draw();
+                    }
+                }
+
+                function init() {
+                    particlesArray = [];
+                    let numberOfParticles = (canvas.height * canvas.width) / 9000;
+                    for (let i = 0; i < numberOfParticles; i++) {
+                        let size = (Math.random() * 5) + 1;
+                        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+                        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+                        let directionX = (Math.random() * .4) - 0.2;
+                        let directionY = (Math.random() * .4) - 0.2;
+                        let color = 'rgba(139, 92, 246, 0.5)';
+                        particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
+                    }
+                }
+
+                function connect() {
+                    let opacityValue = 1;
+                    for (let a = 0; a < particlesArray.length; a++) {
+                        for (let b = a; b < particlesArray.length; b++) {
+                            let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
+                                ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
+                            if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                                opacityValue = 1 - (distance / 20000);
+                                ctx.strokeStyle = `rgba(167, 139, 250, ${opacityValue})`;
+                                ctx.lineWidth = 1;
+                                ctx.beginPath();
+                                ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                                ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                }
+
+                function animate() {
+                    requestAnimationFrame(animate);
+                    ctx.clearRect(0, 0, innerWidth, innerHeight);
+                    for (let i = 0; i < particlesArray.length; i++) {
+                        particlesArray[i].update();
+                    }
+                    connect();
+                }
+
+                window.addEventListener('resize', function() {
+                    canvas.width = innerWidth;
+                    canvas.height = document.getElementById('home').offsetHeight;
+                    mouse.radius = (canvas.height / 100) * (canvas.width / 100);
+                    init();
+                });
+
+                window.addEventListener('mouseout', function(){
+                    mouse.x = undefined;
+                    mouse.y = undefined;
+                });
+
+                init();
+                animate();
+            }
+
+
+            // --- Animated Typing for Search Placeholder ---
+            const searchInput = document.getElementById('search-input');
+            if(searchInput) {
+                const placeholders = [
+                    "Search for restaurants...",
+                    "Find the best Chikan kurtas...",
+                    "Search for cafes with WiFi...",
+                    "Find top-rated doctors...",
+                    "Search for electronics shops..."
+                ];
+                let placeholderIndex = 0;
+                let charIndex = 0;
+                let isDeleting = false;
+
+                function typePlaceholder() {
+                    const currentText = placeholders[placeholderIndex];
+                    if (isDeleting) {
+                        searchInput.placeholder = currentText.substring(0, charIndex - 1);
+                        charIndex--;
+                    } else {
+                        searchInput.placeholder = currentText.substring(0, charIndex + 1);
+                        charIndex++;
+                    }
+
+                    if (!isDeleting && charIndex === currentText.length) {
+                        isDeleting = true;
+                        setTimeout(typePlaceholder, 2000); // Pause at end
+                    } else if (isDeleting && charIndex === 0) {
+                        isDeleting = false;
+                        placeholderIndex = (placeholderIndex + 1) % placeholders.length;
+                        setTimeout(typePlaceholder, 500); // Pause before new text
+                    } else {
+                        const typingSpeed = isDeleting ? 50 : 100;
+                        setTimeout(typePlaceholder, typingSpeed);
+                    }
+                }
+                typePlaceholder();
+            }
+
+
+            // --- Hero Text Parallax on Mouse Move ---
+            const heroSection = document.getElementById('home');
+            const heroHeadline = document.getElementById('hero-headline');
+            const heroSubheadline = document.getElementById('hero-subheadline');
+            if (heroSection) {
+                heroSection.addEventListener('mousemove', (e) => {
+                    const { clientX, clientY } = e;
+                    const x = (clientX - window.innerWidth / 2) / 50; // Divide to reduce effect
+                    const y = (clientY - window.innerHeight / 2) / 50;
+
+                    heroHeadline.style.transform = `translate(${x}px, ${y}px)`;
+                    heroSubheadline.style.transform = `translate(${x * 0.5}px, ${y * 0.5}px)`; // Slower for depth
+                });
+            }
+
+            // --- Generic Modal Handling & AI Logic ---
+            const openModal = (modal) => modal.classList.add('active');
+            const closeModal = (modal) => modal.classList.remove('active');
+            
+            // --- AI Description Modal ---
+            const aiDescModal = document.getElementById('aiDescModal');
+            const listBusinessBtn = document.getElementById('listBusinessBtn');
+            const tryDescBtn = document.getElementById('tryDescBtn');
+            const closeDescModalBtn = document.getElementById('closeDescModalBtn');
+            
+            listBusinessBtn.addEventListener('click', () => openModal(aiDescModal));
+            tryDescBtn.addEventListener('click', () => openModal(aiDescModal));
+            closeDescModalBtn.addEventListener('click', () => closeModal(aiDescModal));
+            aiDescModal.addEventListener('click', (e) => {
+                if (e.target === aiDescModal) closeModal(aiDescModal);
+            });
+
+            // --- AI WhatsApp Modal ---
+            const aiWhatsappModal = document.getElementById('aiWhatsappModal');
+            const tryWhatsappBtn = document.getElementById('tryWhatsappBtn');
+            const closeWhatsappModalBtn = document.getElementById('closeWhatsappModalBtn');
+
+            tryWhatsappBtn.addEventListener('click', () => openModal(aiWhatsappModal));
+            closeWhatsappModalBtn.addEventListener('click', () => closeModal(aiWhatsappModal));
+            aiWhatsappModal.addEventListener('click', (e) => {
+                if (e.target === aiWhatsappModal) closeModal(aiWhatsappModal);
+            });
+            
+            // --- Gemini API Call Function ---
+            const callGemini = async (prompt, button, buttonText, loader, resultContainer, resultElement, errorElement) => {
+                const btnTextSpan = document.getElementById(buttonText);
+                const loaderElement = document.getElementById(loader);
+                const container = document.getElementById(resultContainer);
+                const errorP = document.getElementById(errorElement);
+                const btn = document.getElementById(button);
+                btnTextSpan.textContent = 'Generating...';
+                loaderElement.classList.remove('hidden');
+                btn.disabled = true;
+                container.classList.add('hidden');
+                errorP.textContent = '';
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                    const result = await response.json();
+                    if (result.candidates?.[0]?.content?.parts?.[0]?.text) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error('Unexpected API response format.');
+                    }
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    errorP.textContent = 'Sorry, we couldn\'t generate a response at this time. Please try again later.';
+                    container.classList.remove('hidden');
+                    document.getElementById(resultElement).innerHTML = '';
+                    return null;
+                } finally {
+                    btnTextSpan.textContent = btn.innerText.includes("Description") ? 'Generate Description' : 'Generate Messages';
+                    loaderElement.classList.add('hidden');
+                    btn.disabled = false;
+                }
+            };
+            
+            // --- Description Generator Logic ---
+            const generateDescBtn = document.getElementById('generateDescBtn');
+            generateDescBtn.addEventListener('click', async () => {
+                const keywords = document.getElementById('descKeywords').value;
+                if (!keywords.trim()) {
+                    document.getElementById('descErrorMessage').textContent = 'Please enter some keywords.';
+                    document.getElementById('descResultContainer').classList.remove('hidden');
+                    return;
+                }
+                const prompt = `You are an expert marketing copywriter for a business directory in Lucknow, India. Write a compelling and professional business description of about 50-70 words. The tone should be inviting and highlight the key strengths. Use the following keywords to generate the description: "${keywords}"`;
+                const generatedText = await callGemini(prompt, 'generateDescBtn', 'generateDescBtnText', 'descLoader', 'descResultContainer', 'aiDescResult', 'descErrorMessage');
+                if (generatedText) {
+                    document.getElementById('aiDescResult').value = generatedText;
+                    document.getElementById('descResultContainer').classList.remove('hidden');
+                }
+            });
+            
+            // --- WhatsApp Message Generator Logic ---
+            const generateWhatsappBtn = document.getElementById('generateWhatsappBtn');
+            generateWhatsappBtn.addEventListener('click', async () => {
+                const offer = document.getElementById('whatsappOffer').value;
+                if (!offer.trim()) {
+                    document.getElementById('whatsappErrorMessage').textContent = 'Please describe your offer or event.';
+                    document.getElementById('whatsappResultContainer').classList.remove('hidden');
+                    return;
+                }
+                const prompt = `You are a WhatsApp marketing expert for small businesses in Lucknow, India. Generate 3 short, catchy, and effective WhatsApp promotional messages. Use a friendly tone and include some Hinglish to connect with a local audience. The message should be based on this offer: "${offer}". Include relevant emojis. Start each message with a number and a period (e.g., "1. ", "2. ").`;
+                const generatedText = await callGemini(prompt, 'generateWhatsappBtn', 'generateWhatsappBtnText', 'whatsappLoader', 'whatsappResultContainer', 'aiWhatsappResult', 'whatsappErrorMessage');
+                if (generatedText) {
+                    const resultDiv = document.getElementById('aiWhatsappResult');
+                    resultDiv.innerHTML = '';
+                    const messages = generatedText.split(/\d\.\s/).filter(m => m.trim() !== '');
+                    messages.forEach(msg => {
+                        const msgBox = document.createElement('div');
+                        msgBox.className = 'p-3 rounded-lg bg-white/10 text-white cursor-pointer hover:bg-white/20 transition';
+                        msgBox.textContent = msg.trim();
+                        msgBox.onclick = () => {
+                            const textarea = document.createElement('textarea');
+                            textarea.value = msg.trim();
+                            document.body.appendChild(textarea);
+                            textarea.select();
+                            try {
+                                document.execCommand('copy');
+                                msgBox.textContent = 'Copied!';
+                                setTimeout(() => { msgBox.textContent = msg.trim(); }, 1500);
+                            } catch (err) {
+                                console.error('Fallback: Oops, unable to copy', err);
+                            }
+                            document.body.removeChild(textarea);
+                        };
+                        resultDiv.appendChild(msgBox);
+                    });
+                    document.getElementById('whatsappResultContainer').classList.remove('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
